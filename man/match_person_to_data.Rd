@@ -58,5 +58,15 @@ match_person_to_data("Linnæus", "Carl", botanists)  # Swap detection
 
 # No match
 match_person_to_data("Greg", "Mendel", botanists)  # No match
+
+botanists <- data.frame(
+  `First Name` = c("Carl", "José", "Alexander", "Agnes", "  Jane  ", "Jake"),
+  Surname = c("Linnæus", "Banks", "Humboldt", "Arber", "Coldstream", "Banks"),
+  UPI = c("CL001", "JB002", "AH003", "AA004", "JC005", "CL002"),
+  stringsAsFactors = FALSE
+)
+
+# LN only with multiple individuals
+match_person_to_data("John", "Banks", botanists)  # Matches "José"
 \dontshow{\}) # examplesIf}
 }

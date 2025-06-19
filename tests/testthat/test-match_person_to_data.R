@@ -88,3 +88,60 @@ test_that("Works with custom column names", {
   expect_equal(result$UPI, "AA004")
   expect_equal(result$message, "EXACT")
 })
+
+
+test_that("Multiple exact matches return multiple UPIs", {
+  data <- data.frame(
+    FN = c("Carl", "Carl"),
+    LN = c("Linnaeus", "Linnaeus"),
+    UPI = c("CL001", "CL002"),
+    stringsAsFactors = FALSE
+  )
+
+  result <- match_person_to_data("carl", "linnaeus", data)
+  expect_equal(length(result$UPI), 2)
+  expect_equal(sort(result$UPI), c("CL001", "CL002"))
+  expect_equal(result$message, "EXACT")
+})
+
+test_that("Multiple FN-only matches return correct message and values", {
+  data <- data.frame(
+    FN = c("Carl", "Carl"),
+    LN = c("Smith", "Jones"),
+    UPI = c("CL003", "CL004"),
+    stringsAsFactors = FALSE
+  )
+
+  result <- match_person_to_data("carl", "linnaeus", data)
+  expect_equal(length(result$UPI), 2)
+  expect_equal(sort(result$UPI), c("CL003", "CL004"))
+  expect_equal(result$message, "FN only")
+})
+
+test_that("Multiple LN-only matches return correct message and values", {
+  data <- data.frame(
+    FN = c("Greg", "Gregor"),
+    LN = c("Mendel", "Mendel"),
+    UPI = c("GM001", "GM002"),
+    stringsAsFactors = FALSE
+  )
+
+  result <- match_person_to_data("isaac", "mendel", data)
+  expect_equal(length(result$UPI), 2)
+  expect_equal(sort(result$UPI), c("GM001", "GM002"))
+  expect_equal(result$message, "LN only")
+})
+
+test_that("Multiple swap matches are handled", {
+  data <- data.frame(
+    FN = c("Linnaeus", "Linnaeus"),
+    LN = c("Carl", "Carl"),
+    UPI = c("CL005", "CL006"),
+    stringsAsFactors = FALSE
+  )
+
+  result <- match_person_to_data("Carl", "Linnaeus", data)
+  expect_equal(length(result$UPI), 2)
+  expect_equal(sort(result$UPI), c("CL005", "CL006"))
+  expect_equal(result$message, "EXACT (Swap)")
+})

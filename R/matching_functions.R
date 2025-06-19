@@ -33,6 +33,17 @@
 #'
 #' # No match
 #' match_person_to_data("Greg", "Mendel", botanists)  # No match
+#'
+#' botanists <- data.frame(
+#'   `First Name` = c("Carl", "José", "Alexander", "Agnes", "  Jane  ", "Jake"),
+#'   Surname = c("Linnæus", "Banks", "Humboldt", "Arber", "Coldstream", "Banks"),
+#'   UPI = c("CL001", "JB002", "AH003", "AA004", "JC005", "CL002"),
+#'   stringsAsFactors = FALSE
+#' )
+#'
+#' # LN only with multiple individuals
+#' match_person_to_data("John", "Banks", botanists)  # Matches "José"
+#'
 match_person_to_data <- function(FN, LN, data, FN_column = 'FN', LN_column = 'LN', UPI_column = 'UPI', ...){
   FN = FN |> clean_name(...) ; LN = LN |> clean_name(...)
   data[[FN_column]] =data[[FN_column]] |> clean_name(...)
@@ -65,3 +76,6 @@ match_person_to_data <- function(FN, LN, data, FN_column = 'FN', LN_column = 'LN
   }
   return(list(UPI = NA, people = NULL, message = 'Neither FN or LN'))
 }
+
+
+enrich
