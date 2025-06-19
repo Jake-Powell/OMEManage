@@ -78,4 +78,34 @@ match_person_to_data <- function(FN, LN, data, FN_column = 'FN', LN_column = 'LN
 }
 
 
-enrich
+# ## Needs fixing
+# Append_UPI_data_by_group <- function(data, UPIdata, group_var = 'URN'){
+#   # Loop over URNs and match
+#   parts = lapply(URNs, function(URN){
+#     teachers = Teacher_Worforce[which(Teacher_Worforce$URN == URN),]
+#     teachers_db_name = apply(teachers[,c(3,4)], 1, function(x) paste0(x, collapse = ' ')) |> sort()
+#     cur = WondeTeachers[which(WondeTeachers$URN == URN),]
+#     cur$teacherName = cur$AllTeacher
+#     cl_teach = cur
+#     teacher_match = lapply(1:nrow(cl_teach), function(index){
+#       dd = cl_teach[index,]
+#       out = match_teacher(FN = dd[5], LN = dd[6], teachers = teachers)
+#       out
+#     })
+#     names(teacher_match) =  cur$teacherName
+#     UPIs = lapply(teacher_match, function(x) x$UPI) |> unlist()
+#     message = lapply(teacher_match, function(x) x$message) |> unlist()
+#     match_teachers = lapply(teacher_match, function(x){
+#       if(is.null(x$teacher)){ return(NA)}
+#       apply(x$teacher[,c(3,4)], 1, function(y)paste0(y,collapse = ' ') ) |> paste0(collapse = ' OR ')
+#     })  |> unlist()
+#     cur$TeacherMatchName = (match_teachers |> as.character())[match(cur$teacherName, names(match_teachers))]
+#     cur$TeacherUPI = (UPIs |> as.character())[match(cur$teacherName, names(UPIs))]
+#     cur$TeacherMessage = (message |> as.character())[match(cur$teacherName, names(message))]
+#     cur$AllTeacherSchool = teachers_db_name |> paste0(collapse = '\n')
+#     return(cur)
+#
+#
+#   })
+#   TeacherClass2.0 = do.call(rbind, parts) # rejoin together.
+# }
