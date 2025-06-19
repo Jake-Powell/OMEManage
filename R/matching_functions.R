@@ -13,8 +13,8 @@
 #'
 #' @examplesIf FALSE
 #' botanists <- data.frame(
-#'   `First Name` = c("Carl", "José", "Alexander", "Agnes", "  Jane  "),
-#'   Surname = c("Linnæus", "Banks", "Humboldt", "Arber", "Coldstream"),
+#'   FN = c("Carl", "José", "Alexander", "Agnes", "  Jane  "),
+#'   LN = c("Linnæus", "Banks", "Humboldt", "Arber", "Coldstream"),
 #'   UPI = c("CL001", "JB002", "AH003", "AA004", "JC005"),
 #'   stringsAsFactors = FALSE
 #' )
