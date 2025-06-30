@@ -2,7 +2,7 @@
 % Please edit documentation in R/matching_functions.R
 \name{match_person_to_data}
 \alias{match_person_to_data}
-\title{Title}
+\title{Match a Person's Name to a Data Frame of Individuals}
 \usage{
 match_person_to_data(
   FN,
@@ -11,62 +11,79 @@ match_person_to_data(
   FN_column = "FN",
   LN_column = "LN",
   UPI_column = "UPI",
+  max_dist = 2,
+  method = "osa",
+  show_all_fuzzy = FALSE,
   ...
 )
 }
 \arguments{
-\item{FN}{First name}
+\item{FN}{Character string. First name of the person to match.}
 
-\item{LN}{Last name}
+\item{LN}{Character string. Last name (surname) of the person to match.}
 
-\item{data}{Data frame containing name and UPI columns}
+\item{data}{A data frame containing at least the columns for first name, last name, and UPI.}
 
-\item{FN_column}{Column name for first names (default: "First Name")}
+\item{FN_column}{Character. Name of the column in `data` that contains first names. Default is `"FN"`.}
 
-\item{LN_column}{Column name for surnames (default: "Surname")}
+\item{LN_column}{Character. Name of the column in `data` that contains last names. Default is `"LN"`.}
 
-\item{UPI_column}{Column name for Unique Person Identifer (UPI) (default: "UPI")}
+\item{UPI_column}{Character. Name of the column in `data` that contains unique identifiers (UPI). Default is `"UPI"`.}
 
-\item{...}{parameters passed to clean_name().}
+\item{max_dist}{Integer. Maximum string distance allowed for fuzzy matching. Default is `2`.}
+
+\item{method}{Character. String distance method to use. Passed to [stringdist::stringdist()]. Default is `"osa"`.}
+
+\item{show_all_fuzzy}{Logical. If `TRUE`, return all fuzzy matches instead of just the best match. Default is `FALSE`.}
+
+\item{...}{Additional parameters passed to [clean_name()] for name normalization.}
 }
 \value{
-A list with UPI, people row, and a message
+A list with the following components:
+\describe{
+  \item{UPI}{The matched UPI(s), or `NA` if no match.}
+  \item{people}{The matched row(s) from `data`.}
+  \item{message}{A character string describing the match type (e.g., `"EXACT"`, `"FUZZY MATCH"`).}
+}
 }
 \description{
-Title
+Attempts to match a person's first and last name to a row in a dataset using
+exact, swapped, or fuzzy matching techniques.
 }
 \examples{
-\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 botanists <- data.frame(
-  `First Name` = c("Carl", "José", "Alexander", "Agnes", "  Jane  "),
-  Surname = c("Linnæus", "Banks", "Humboldt", "Arber", "Coldstream"),
+  FN = c("Carl", "José", "Alexander", "Agnes", "  Jane  "),
+  LN = c("Linnæus", "Banks", "Humboldt", "Arber", "Coldstream"),
   UPI = c("CL001", "JB002", "AH003", "AA004", "JC005"),
   stringsAsFactors = FALSE
 )
 
-# Basic exact match with accents
-match_person_to_data("Jose", "Banks", botanists)  # Matches "José"
+# Exact match (accent-insensitive)
+match_person_to_data("Jose", "Banks", botanists)
 
 # Name with extra spaces
-match_person_to_data("Jane", "Coldstream", botanists)  # Matches "  Jane  "
+match_person_to_data("Jane", "Coldstream", botanists)
 
-# Lowercase input, uppercase and accent in data
-match_person_to_data("carl", "linnaeus", botanists)  # Matches "Carl" "Linnæus"
+# Lowercase input, accented name in data
+match_person_to_data("carl", "linnaeus", botanists)
 
 # Swapped names
-match_person_to_data("Linnæus", "Carl", botanists)  # Swap detection
+match_person_to_data("Linnæus", "Carl", botanists)
 
 # No match
-match_person_to_data("Greg", "Mendel", botanists)  # No match
+match_person_to_data("Greg", "Mendel", botanists)
 
-botanists <- data.frame(
-  `First Name` = c("Carl", "José", "Alexander", "Agnes", "  Jane  ", "Jake"),
+# Data with different column names
+botanists2 <- data.frame(
+  FN = c("Carl", "José", "Alexander", "Agnes", "  Jane  ", "Jake"),
   Surname = c("Linnæus", "Banks", "Humboldt", "Arber", "Coldstream", "Banks"),
   UPI = c("CL001", "JB002", "AH003", "AA004", "JC005", "CL002"),
   stringsAsFactors = FALSE
 )
 
-# LN only with multiple individuals
-match_person_to_data("John", "Banks", botanists)  # Matches "José"
-\dontshow{\}) # examplesIf}
+# Last name only, with multiple entries
+match_person_to_data("John", "Banks", botanists2,
+                     FN_column = "FN", LN_column = "Surname")
+
+
 }
