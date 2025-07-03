@@ -231,3 +231,82 @@ match_person_to_grouped_data <- function(FN, LN, data,
                        show_all_fuzzy = show_all_fuzzy,
                        ...)
 }
+
+#' Match Multiple People to Grouped Data
+#'
+#' Matches a set of individuals (first and last names in a data frame) to a target dataset,
+#' optionally within groupings such as teams, departments, or expeditions. This is a batch
+#' version of `match_person_to_grouped_data()`.
+#'
+#' @param to_match A data frame of people to match, with at least first and last name columns.
+#' @param data A data frame containing the reference data to match against (must contain names, UPI, and optional group column).
+#' @param FN_column Column name for first names in `data` (default: `"FN"`).
+#' @param LN_column Column name for last names in `data` (default: `"LN"`).
+#' @param UPI_column Column name for Unique Person Identifier in `data` (default: `"UPI"`).
+#' @param group_column Optional. Column name in `data` representing a grouping (e.g., Department, Team).
+#' @param group_value Optional. If specified, filters `data` to just this group before matching.
+#' @param max_dist Maximum allowed string distance for fuzzy matching (default: `2`).
+#' @param method Method used for computing string distance. Passed to `stringdist::stringdist()` (default: `"osa"`).
+#' @param show_all_fuzzy Logical; if `TRUE`, shows all fuzzy matches instead of just the best (default: `FALSE`).
+#' @param to_match_FN_column Column name for first names in the `to_match` data frame (default: same as `FN_column`).
+#' @param to_match_LN_column Column name for last names in the `to_match` data frame (default: same as `LN_column`).
+#' @param to_match_group_column Column name in `to_match` that specifies the group (if applicable). Used only when `group_column` is also specified.
+#' @param include_non_matched Logical; if `TRUE`, includes rows from `to_match` even if no match is found (default: `FALSE`).
+#' @param ... Additional arguments passed to `clean_name()` or internal matching functions.
+#'
+#' @return A data frame of matched people. Includes input first and last names as `inputFN` and `inputLN`.
+#'         If `include_non_matched = TRUE`, rows with no match will still be returned (likely with NAs).
+#'
+
+#' @export
+
+match_people_to_grouped_data <- function(to_match, data,
+                                         FN_column = 'FN',
+                                         LN_column = 'LN',
+                                         UPI_column = 'UPI',
+                                         group_column = NULL,
+                                         group_value = NULL,
+                                         max_dist = 2,
+                                         method = "osa",
+                                         show_all_fuzzy = FALSE,
+                                         to_match_FN_column = FN_column,
+                                         to_match_LN_column = LN_column,
+                                         to_match_group_column = group_column,
+                                         include_non_matched = FALSE,
+                                         ...) {
+  # Filter by group if specified
+  if (!is.null(group_column) && !is.null(group_value)) {
+    data <- data[data[[group_column]] == group_value, ]
+    if (nrow(data) == 0) {
+      return(list(UPI = NA, people = NULL, message = paste("No individuals in group:", group_value)))
+    }
+  }
+
+  check = lapply(1:nrow(to_match), function(index){
+    d = to_match[index,]
+    FN = d[[to_match_FN_column]] ; LN = d[[to_match_LN_column]]
+    out = OMEManage::match_person_to_grouped_data(FN =FN,
+                                                  LN = LN,
+                                                  data = data,
+                                                  FN_column = FN_column,
+                                                  LN_column = LN_column,
+                                                  group_column = group_column,
+                                                  group_value = d[[to_match_group_column]],
+                                                  max_dist = max_dist,
+                                                  method = method,
+                                                  to_match_FN_column = to_match_FN_column,
+                                                  to_match_LN_column = to_match_LN_column,
+                                                  to_match_group_column = to_match_group_column,
+                                                  ...)
+
+    ret = out$people
+    if(is.null(ret) & !include_non_matched) return(ret)
+    if(is.null(ret) & include_non_matched) return(ret)
+    ret = data.frame(inputFN = FN,
+                     inputLN =  LN,
+                     ret)
+    ret
+  })
+  check = do.call(rbind, check)
+
+}
