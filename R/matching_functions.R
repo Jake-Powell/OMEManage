@@ -62,10 +62,12 @@
 match_person_to_data <- function(FN, LN, data,
                                  FN_column = 'FN', LN_column = 'LN', UPI_column = 'UPI',
                                  max_dist = 2, method = "osa", show_all_fuzzy = FALSE, ...) {
-
   if(!FN_column %in% names(data)) stop('FN_column does not exist in data')
   if(!LN_column %in% names(data)) stop('FN_column does not exist in data')
   if(!UPI_column %in% names(data)) stop('FN_column does not exist in data')
+
+  # Expand multiple names
+  data = expand_name_variants(data, FN_column, LN_column)
 
     # Clean inputs
   FN <- clean_name(FN, ...)
@@ -259,8 +261,7 @@ match_person_to_grouped_data <- function(FN, LN, data,
 #'
 
 #' @export
-
-match_people_to_grouped_data <- function(to_match, data,
+match_people_to_data <- function(to_match, data,
                                          FN_column = 'FN',
                                          LN_column = 'LN',
                                          UPI_column = 'UPI',
@@ -274,13 +275,6 @@ match_people_to_grouped_data <- function(to_match, data,
                                          to_match_group_column = group_column,
                                          include_non_matched = FALSE,
                                          ...) {
-  # Filter by group if specified
-  if (!is.null(group_column) && !is.null(group_value)) {
-    data <- data[data[[group_column]] == group_value, ]
-    if (nrow(data) == 0) {
-      return(list(UPI = NA, people = NULL, message = paste("No individuals in group:", group_value)))
-    }
-  }
 
   check = lapply(1:nrow(to_match), function(index){
     d = to_match[index,]
@@ -294,19 +288,20 @@ match_people_to_grouped_data <- function(to_match, data,
                                                   group_value = d[[to_match_group_column]],
                                                   max_dist = max_dist,
                                                   method = method,
-                                                  to_match_FN_column = to_match_FN_column,
-                                                  to_match_LN_column = to_match_LN_column,
-                                                  to_match_group_column = to_match_group_column,
                                                   ...)
 
     ret = out$people
+    method = out$message
     if(is.null(ret) & !include_non_matched) return(ret)
     if(is.null(ret) & include_non_matched) return(ret)
     ret = data.frame(inputFN = FN,
                      inputLN =  LN,
+                     method,
                      ret)
     ret
   })
   check = do.call(rbind, check)
 
 }
+
+
