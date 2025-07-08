@@ -302,6 +302,9 @@ match_people_to_data <- function(to_match, data,
     ret = out$people
     data_names = paste0('NameDB_',names(ret))
     method = out$message
+    print(ret)
+    print(method)
+    print(d)
     # if(is.null(ret) & !include_non_matched) return(ret)
     # if(is.null(ret) & include_non_matched) return(ret)
     ret = data.frame(d  |> as.vector(),
