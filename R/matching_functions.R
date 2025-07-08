@@ -219,7 +219,8 @@ match_person_to_grouped_data <- function(FN, LN, data,
   if (!is.null(group_column) && !is.null(group_value)) {
     data <- data[data[[group_column]] == group_value, ]
     if (nrow(data) == 0) {
-      return(list(UPI = NA, people = NULL, message = paste("No individuals in group:", group_value)))
+      warning(paste("No individuals in group:", group_value))
+      return(list(UPI = NA, people = data, message = paste("No individuals in group:", group_value)))
     }
   }
 
