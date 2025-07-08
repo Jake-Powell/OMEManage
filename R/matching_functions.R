@@ -276,7 +276,7 @@ match_people_to_data <- function(to_match, data,
                                          to_match_LN_column = LN_column,
                                          to_match_group_column = group_column,
                                          include_non_matched = FALSE,
-                                         verbose = T
+                                         verbose = T,
                                          ...) {
 
   if(verbose) lapply = pbapply::pblapply
