@@ -300,8 +300,7 @@ match_people_to_data <- function(to_match, data,
     method = out$message
     if(is.null(ret) & !include_non_matched) return(ret)
     if(is.null(ret) & include_non_matched) return(ret)
-    ret = data.frame(inputFN = FN,
-                     inputLN =  LN,
+    ret = data.frame(d
                      method,
                      ret)
     ret
