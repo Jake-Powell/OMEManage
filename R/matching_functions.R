@@ -63,8 +63,8 @@ match_person_to_data <- function(FN, LN, data,
                                  FN_column = 'FN', LN_column = 'LN', UPI_column = 'UPI',
                                  max_dist = 2, method = "osa", show_all_fuzzy = FALSE, ...) {
   if(!FN_column %in% names(data)) stop('FN_column does not exist in data')
-  if(!LN_column %in% names(data)) stop('FN_column does not exist in data')
-  if(!UPI_column %in% names(data)) stop('FN_column does not exist in data')
+  if(!LN_column %in% names(data)) stop('LN_column does not exist in data')
+  if(!UPI_column %in% names(data)) stop('UPI_column does not exist in data')
 
   # Expand multiple names
   data = expand_name_variants(data, FN_column, LN_column)
